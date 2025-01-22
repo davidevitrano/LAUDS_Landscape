@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Visualization</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+    <div id="filters" class="font-size-small">
+        <label class="filter-label-values">
+            <input type="checkbox" id="filter-values" name="filter" value="Values">
+            <span><svg class="filter-shape" viewBox="0 0 20 20">
+                <polygon points="2,2 18,2 12,10 18,18 2,18 8,10" fill="none" stroke="#636363" stroke-width="0.07rem"/>
+            </svg>Values</span>
+        </label>
+        <label class="filter-label-materials">
+            <input type="checkbox" id="filter-materials" name="filter" value="Materials">
+            <span><svg class="filter-shape" viewBox="0 0 20 20">
+                <rect x="2" y="2" width="16" height="16" fill="none" stroke="#636363" stroke-width="0.07rem"/>
+            </svg>Materials</span>
+        </label>
+        <label class="filter-label-processes">
+            <input type="checkbox" id="filter-processes" name="filter" value="Processes and Technologies">
+            <span><svg class="filter-shape" viewBox="0 0 20 20">
+                <polygon points="10,2 18,18 2,18" fill="none" stroke="#636363" stroke-width="0.07rem"/>
+            </svg>Processes and Technologies</span>
+        </label>
+        <label class="filter-label-knowledge">
+            <input type="checkbox" id="filter-knowledge" name="filter" value="Knowledge Sharing">
+            <span><svg class="filter-shape" viewBox="0 0 20 20">
+                <polygon points="2,10 6,3 14,3 18,10 14,17 6,17" fill="none" stroke="#636363" stroke-width="0.07rem"/>
+            </svg>Knowledge Sharing</span>
+        </label>
+    </div>
+    
+    <div id="dataset-button" class="utility-button font-size-small">
+        <label>
+            <span>Dataset</span>
+        </label>
+    </div>
+    
+    <div id="legend-button" class="utility-button font-size-small">
+        <label>
+            <span>Legend</span>
+        </label>
+    </div>
+
+    <div id="view-mode-button" class="utility-button">
+        <div class="segmented-button">
+            <div class="button-container">
+                <button class="segment-btn active font-size-small" data-mode="network">Network</button>
+                <button class="segment-btn font-size-small" data-mode="gallery">Gallery</button>
+                <button class="segment-btn font-size-small" data-mode="nearest">Nearest</button>
+                <div class="active-indicator"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="network"></div>
+    <div id="popup" class="hidden">
+        <div id="popup-content"></div>
+    </div>
+    
+    <!-- Cambiato da script normale a module -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>

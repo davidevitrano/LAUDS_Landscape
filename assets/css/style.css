@@ -1,0 +1,726 @@
+@font-face {
+    font-family: "Haskoy-Medium";
+    src: url("../fonts/Haskoy-Medium.woff2") format("woff2");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Haskoy-Thin";
+    src: url("../fonts/Haskoy-Thin.woff2") format("woff2");
+    font-style: normal;
+}
+
+.network-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.network-visible {
+    opacity: 1;
+    pointer-events: all;
+    transition: opacity 0.5s ease-in-out;
+}
+
+html, body {
+    font-size: 16px;
+    font-family: 'Haskoy-Medium', Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    font-feature-settings: 'ordn' on;
+    margin: 0;
+    overflow: hidden;
+    background-color: #f4f4f4;
+    line-height: 1.5;
+}
+
+@media (min-width: 1024px) {
+    html, body {
+        font-size: 18px;
+    }
+}
+
+.font-size-small {
+    font-size: 0.8rem;
+}
+
+.font-size-medium-small {
+    font-size: 0.9rem;
+}
+
+.font-size-regular {
+    font-size: 1.2rem;
+}
+
+.font-size-medium {
+    font-size: 2rem;
+}
+
+.font-bold {
+    font-weight: 800;
+}
+
+#network {
+    width: 100vw;
+    height: 100vh;
+    background-color: #f0f0f0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+#filters {
+    padding: 1rem;
+    position: fixed;
+    display: flex;
+    gap: 0.625rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: left;
+    z-index: 10;
+}
+
+.filter-label-values {
+    position: relative;
+    cursor: pointer;
+    margin: 0.1rem;
+}
+
+.filter-label-values input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.filter-label-values span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 0.07rem solid #636363;
+    background-color: #ffffff;
+    color: #636363;
+    border-radius: 1.25rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.filter-label-values input:checked + span {
+    background-color: #ffffff;
+    color: #FF5C00;
+    border: 0.07rem solid #FF5C00;
+}
+
+.filter-label-values span:hover {
+    background-color: white;
+    color: #FF5C00;
+    border: 0.07rem solid #FF5C00;
+}
+
+.filter-label-materials {
+    position: relative;
+    cursor: pointer;
+    margin: 0.1rem;
+}
+
+.filter-label-materials input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.filter-label-materials span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 0.07rem solid #636363;
+    background-color: #ffffff;
+    color: #636363;
+    border-radius: 1.25rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.filter-label-materials input:checked + span {
+    background-color: white;
+    color: #9747FF;
+    border: 0.07rem solid #9747FF;
+}
+
+.filter-label-materials span:hover {
+    background-color: white;
+    color: #9747FF;
+    border: 0.07rem solid #9747FF;
+}
+
+.filter-label-processes {
+    position: relative;
+    cursor: pointer;
+    margin: 0.1rem;
+}
+
+.filter-label-processes input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.filter-label-processes span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 0.07rem solid #636363;
+    background-color: #ffffff;
+    color: #636363;
+    border-radius: 1.25rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.filter-label-processes input:checked + span {
+    background-color: white;
+    color: #636363;
+    border: 0.07rem solid #636363;
+}
+
+.filter-label-processes span:hover {
+    background-color: white;
+    color: #636363;
+    border: 0.07rem solid #636363;
+}
+
+.filter-label-knowledge {
+    position: relative;
+    cursor: pointer;
+    margin: 0.1rem;
+}
+
+.filter-label-knowledge input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.filter-label-knowledge span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 0.07rem solid #636363;
+    background-color: #ffffff;
+    color: #636363;
+    border-radius: 1.25rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.filter-label-knowledge input:checked + span {
+    background-color: white;
+    color: #000;
+    border: 0.07rem solid #000;
+}
+
+.filter-label-knowledge span:hover {
+    background-color: white;
+    color: #000;
+    border: 0.07rem solid #000;
+}
+
+.filter-shape {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.content-container {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#return-button {
+    top: 1rem;
+    right: 1rem;
+}
+
+.utility-button {
+    position: fixed;
+    z-index: 10;
+}
+
+.utility-button label {
+    position: relative;
+    cursor: pointer;
+    margin: 0.1rem;
+}
+
+.utility-button label span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 0.07rem solid #636363;
+    background-color: #ffffff;
+    color: #636363;
+    border-radius: 1.25rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.utility-button label span:hover {
+    background-color: #636363;
+    color: white;
+}
+
+#dataset-button {
+    top: 1rem;
+    right: 1rem;
+}
+
+#legend-button {
+    bottom: 1rem;
+    right: 1rem;
+}
+
+#view-mode-button {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    z-index: 10;
+}
+
+.segmented-button {
+    background: white;
+    border: 0.07rem solid #636363;
+    border-radius: 1.25rem;
+    padding: 0.25rem;
+    width: 5.5rem;
+}
+
+.button-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.segment-btn {
+    position: relative;
+    padding: 0.5rem 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    transition: color 0.3s ease;
+    border-radius: 1rem;
+    text-align: center;
+    color: #636363;
+    width: 100%;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.segment-btn.active {
+    color: white;
+}
+
+.active-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2.25rem;
+    background-color: #636363;
+    border-radius: 1rem;
+    transition: transform 0.3s ease;
+    z-index: 1;
+}
+
+/* Position for each state */
+.segment-btn:nth-child(2).active ~ .active-indicator {
+    transform: translateY(calc(2.25rem + 0.25rem));
+}
+
+.segment-btn:nth-child(3).active ~ .active-indicator {
+    transform: translateY(calc(4.5rem + 0.5rem));
+}
+
+.node circle {
+    stroke: #FF5C00;
+    stroke-width: 0.125rem;
+    fill: #f0f0f0;
+}
+
+.node circle.value-node {
+    fill: #FF5C00;
+    stroke: none;
+}
+
+.node rect.material-node {
+    fill: #9747FF;
+    stroke: none;
+}
+
+.node polygon.process-node {
+    fill: #636363;
+    stroke: none;
+}
+
+.node polygon.knowledge-node {
+    fill: #000;
+    stroke: none;
+}
+
+.link {
+    fill: none;
+    stroke: #999;
+    stroke-opacity: 0.25;
+    stroke-width: 0.1rem;
+}
+
+#popup {
+    position: fixed;
+    border-radius: 1.25rem;
+    top: 1rem;
+    right: 1rem;
+    width: 25rem;
+    bottom: 1rem;
+    background-color: #ffffff;
+    padding: 1.25rem;
+    overflow-y: auto;
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+/* For Webkit browsers (Chrome, Safari, etc.) */
+#popup::-webkit-scrollbar {
+    display: none;
+}
+
+#popup.visible {
+    transform: translateX(0);
+}
+
+#popup h3 {
+    font-family: 'Haskoy-Medium';
+    color: #FF5C00;
+    font-size: 2rem;
+    margin: 0;
+}
+
+#popup h2 {
+    font-family: 'Haskoy-Medium';
+    color: #9747FF;
+    font-size: 2rem;
+    margin: 0;
+}
+
+#popup p {
+    font-family: 'Haskoy-Medium';
+    
+}
+
+.popup-close {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #FF5C00;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.popup-line {
+    border-bottom: 0.07rem solid #FF5C00;
+}
+
+.popup-line2 {
+    border-bottom: 0.07rem solid #9747FF;
+}
+
+.popup-links {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.625rem;
+    margin-bottom: 1.25rem;
+}
+
+.link-label {
+    position: relative;
+    cursor: pointer;
+    margin: 0.1rem;
+}
+
+.popup-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 0.07rem solid #636363;
+    background-color: #ffffff;
+    color: #636363;
+    border-radius: 1.25rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.popup-link:hover {
+    background-color: #636363;
+    color: white;
+}
+
+.connected-category {
+    margin-top: 1.25rem;
+}
+
+.connected-nodes-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin-top: 0.625rem;
+}
+
+.connected-node-label {
+    margin: 0;
+}
+
+.connected-node-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: 0.07rem solid #636363;
+    background-color: #ffffff;
+    color: #636363;
+    border-radius: 1.25rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.connected-node-btn:hover {
+    background-color: #636363;
+    color: white;
+}
+
+.toggle-content {
+    padding: 0.5rem;
+    background-color: #f9f9f9;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.connected-node {
+    padding: 0.2rem 0rem;
+    border-bottom: 0.07rem solid #eaeaea;
+}
+
+.connected-node:last-child {
+    border-bottom: none;
+}
+
+.toggle-content.hidden {
+    display: none;
+}
+
+.node.highlight {
+    opacity: 1 !important;
+}
+
+.link.highlight {
+    stroke: #929292 !important;
+    stroke-opacity: 1 !important;
+}
+
+.link.highlight-values {
+    stroke: #FF5C00 !important;
+    stroke-opacity: 1 !important;
+}
+
+.link.highlight-materials {
+    stroke: #9747FF !important;
+    stroke-opacity: 1 !important;
+}
+
+.link.highlight-processes {
+    stroke: #636363 !important;
+    stroke-opacity: 1 !important;
+}
+
+.link.highlight-knowledge {
+    stroke: #000 !important;
+    stroke-opacity: 1 !important;
+}
+
+.node.dim {
+    opacity: 0.2 !important;
+}
+
+.link.dim {
+    stroke-opacity: 0.2 !important;
+}
+
+.filter-label-values input:checked + span .filter-shape polygon {
+    fill: #FF5C00;
+    stroke: #FF5C00;
+}
+
+.filter-label-materials input:checked + span .filter-shape rect {
+    fill: #9747FF;
+    stroke: #9747FF;
+}
+
+.filter-label-processes input:checked + span .filter-shape polygon {
+    fill: #636363;
+    stroke: #636363;
+}
+
+.filter-label-knowledge input:checked + span .filter-shape polygon  {
+    fill: #000;
+    stroke: #000;
+}
+
+.filter-label-values input:hover + span .filter-shape polygon {
+    fill: #FF5C00;
+    stroke: #FF5C00;
+}
+
+.filter-label-materials input:hover + span .filter-shape rect {
+    fill: #9747FF;
+    stroke: #9747FF;
+}
+
+.filter-label-processes input:hover + span .filter-shape polygon {
+    fill: #636363;
+    stroke: #636363;
+}
+
+.filter-label-knowledge input:hover + span .filter-shape polygon {
+    fill: #000;
+    stroke: #000;
+}
+
+.filter-label-values input:checked + span .filter-shape,
+.filter-label-materials input:checked + span .filter-shape,
+.filter-label-processes input:checked + span .filter-shape,
+.filter-label-knowledge input:checked + span .filter-shape {
+    transition: transform 0.2s ease;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    #popup {
+        width: 100vw;
+    }
+
+    #filters {
+        align-items: stretch;
+    }
+
+    .filter-label {
+        text-align: center;
+    }
+
+    .filter-label span {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    .utility-button label {
+        text-align: center;
+    }
+    
+    .utility-button label span {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    .popup-links {
+        flex-direction: column;
+    }
+
+    .link-label {
+        margin: 0.3125rem 0;
+    }
+}
+
+
+/* Add these styles to style.css */
+
+#location-permission-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+    width: 25rem;
+    background-color: #ffffff;
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    z-index: 1000;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+}
+
+#location-permission-popup.visible {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.location-popup-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.continue-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.5rem;
+    border: 0.07rem solid #FF5C00;
+    background-color: #ffffff;
+    color: #FF5C00;
+    border-radius: 1.25rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+}
+
+.continue-btn:hover {
+    background-color: #FF5C00;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    #location-permission-popup {
+        width: calc(100vw - 2rem);
+        margin: 1rem;
+    }
+}
+
+.image-container {
+    transition: transform 0.3s ease;
+}
