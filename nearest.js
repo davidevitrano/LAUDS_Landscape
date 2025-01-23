@@ -62,42 +62,9 @@ class NearestView {
             .attr("width", this.width)
             .attr("height", this.height)
             .style("background-color", "#ECECEC");
-    
+
         this.g = this.svg.append("g");
-        
-        // Calcola la scala appropriata per la mappa
-        const mapWidth = 834.37;
-        const mapHeight = 546.88;
-        const scale = Math.min(this.width / mapWidth, this.height / mapHeight) * 0.8; // 80% della dimensione disponibile
-    
-        // Calcola le coordinate per centrare la mappa
-        const translateX = (this.width - mapWidth * scale) / 2;
-        const translateY = (this.height - mapHeight * scale) / 2;
-        
-        // Aggiungi il gruppo per la mappa del mondo come primo elemento
-        const worldMapGroup = this.g.append("g")
-            .attr("class", "world-map-group")
-            .attr("transform", `translate(${translateX},${translateY}) scale(${scale})`);
-    
-        // Aggiungi gli stili necessari
-        const defs = worldMapGroup.append("defs")
-            .html(`
-                <style>
-                    .cls-1 { fill: #ff5c00; }
-                    .cls-2 { fill: #ececec; }
-                </style>
-            `);
-    
-        // Aggiungi il contenuto della mappa
-        // Nota: aggiunto solo il primo gruppo come esempio
-        worldMapGroup.append("g")
-            .html(`
-                <g>
-                    <path class="cls-2" d="M407.42,366.95l-1.11-1.56s.89-1.22,1.11-1.67c.17-.35,1.1-.91,1.61-.91.14,0,.23.04.28.13.1.19.33.4.57.62.32.28.65.58.65.83,0,.22-.17.45-.33.67-.17.22-.33.45-.33.67,0,.07-.02.12-.07.14-.04.02-.1.04-.19.04h0c-.08,0-.16,0-.25-.02-.1,0-.2-.02-.29-.02-.14,0-.33.02-.42.19-.21.42-.43.95-.45,1l-.78-.11Z"/>
-                    <path class="cls-1" d="M409.03,362.82c.14,0,.23.04.27.13.1.19.33.4.58.62.32.28.65.57.65.82,0,.22-.17.44-.33.66-.17.22-.34.45-.34.67,0,.12-.08.18-.26.18-.08,0-.16,0-.25-.02-.1,0-.2-.02-.29-.02-.14,0-.34.02-.42.19-.21.41-.42.93-.44,1l-.77-.11-1.11-1.55c.07-.09.9-1.24,1.11-1.67.17-.34,1.1-.91,1.61-.91M409.03,362.81c-.5,0-1.44.56-1.61.91-.22.45-1.11,1.67-1.11,1.67l1.11,1.56.78.11s.22-.56.45-1c.07-.15.23-.19.41-.19s.38.04.54.04.27-.04.27-.19c0-.45.67-.89.67-1.34s-1-1-1.22-1.45c-.05-.09-.15-.13-.28-.13h0Z"/>
-                </g>
-            `); // Continua con gli altri gruppi...
-    
+
         if (this.useGeolocation) {
             this.circleRadii.forEach(radius => {
                 this.g.append("circle")
@@ -111,43 +78,34 @@ class NearestView {
                     .attr("class", "distance-circle");
             });
         }
-    
+
         const zoom = d3.zoom()
             .scaleExtent([0.7, 5])
             .on("zoom", (event) => {
                 this.currentZoomLevel = event.transform.k;
-                
-                // Applica la trasformazione al gruppo principale
                 this.g.attr("transform", event.transform);
-    
-                // Mantieni costante lo spessore delle linee per i cerchi di distanza
-                this.g.selectAll(".distance-circle")
-                    .attr("stroke-width", `${1 / event.transform.k}px`);
-    
-                // Aggiorna i nodi
-                this.g.selectAll(".node").each(function() {
+
+                // Update node visibility based on zoom level
+                this.updateNodesForZoom(event.transform.k);
+
+                // Apply inverse transform to visible nodes
+                this.g.selectAll(".node").each(function () {
                     const node = d3.select(this);
                     node.selectAll("circle")
                         .attr("transform", `scale(${1 / event.transform.k})`);
                     node.select("text")
                         .attr("transform", `scale(${1 / event.transform.k})`);
                 });
-    
-                // Aggiorna la visibilità dei nodi in base al livello di zoom
-                this.updateNodesForZoom(event.transform.k);
-    
+
+                this.g.selectAll(".distance-circle")
+                    .attr("stroke-width", `${1 / event.transform.k}px`);
+
                 this.g.select(".user-point")
                     .attr("transform", `scale(${1 / event.transform.k})`);
             });
-    
+
         this.svg.call(zoom);
-    
-        // Imposta una trasformazione iniziale per centrare e zoomare la mappa
-        const initialTransform = d3.zoomIdentity
-            .translate(this.width / 2, this.height / 2)
-            .scale(1);
-        this.svg.call(zoom.transform, initialTransform);
-    
+
         await this.loadData();
         await this.getUserLocation();
         if (this.useGeolocation) {
