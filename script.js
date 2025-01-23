@@ -388,7 +388,7 @@ Promise.all([
             .attr("dy", d => d.group === 'main' ? -20 : -15)
             .attr("dx", 0)
             .attr("text-anchor", "middle")
-            .attr("class", d => d.group === 'main' ? 'font-size-medium-small' : 'font-size-small')
+            .attr("class", d => d.group === 'main' ? 'font-size-small' : 'font-size-small')
             .text(d => d.id);
 
         // Node interaction handling
