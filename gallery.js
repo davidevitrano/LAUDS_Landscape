@@ -134,8 +134,8 @@ class GalleryView {
         }
     }
 
-    async createImagePopup(imageData, category, elementName, event) {
-        // Rimuove popup esistenti e pulisce intervalli di animazione
+   async createImagePopup(imageData, category, elementName, event) {
+       // Rimuove popup esistenti e pulisce intervalli di animazione
         if (this.animationInterval) {
             clearInterval(this.animationInterval);
             this.animationInterval = null;
@@ -143,8 +143,11 @@ class GalleryView {
         d3.select("#popup").remove();
 
         // Trova le immagini correlate
-        const relatedImages = await this.findRelatedImages(imageData.owner);
-
+        let relatedImages = await this.findRelatedImages(imageData.owner);
+        
+        // Filter out the current image
+        relatedImages = relatedImages.filter(img => img.imageUrl !== imageData.imageUrl);
+        
         // Crea il nuovo popup
         const newPopup = d3.select("body").append("div")
             .attr("id", "popup")
@@ -154,7 +157,7 @@ class GalleryView {
             <button id="close-popup" class="popup-close">×</button>
             <div>${elementName}</div>
             <h3>${imageData.owner}</h3>
-            <div class="popup-image-container" style="height: 30vh; overflow: hidden; border-radius: 0.625rem; margin: 1rem 0;">
+            <div class="popup-image-container" style="height: 35vh; overflow: hidden; border-radius: 0.625rem; margin: 1rem 0;">
                 <img src="${imageData.imageUrl}" 
                      alt="${elementName}" 
                      style="width: 100%; 
@@ -252,8 +255,8 @@ class GalleryView {
     createSimulation() {
         this.simulation = d3.forceSimulation(this.nodes)
             .force("center", d3.forceCenter(this.width / 2, this.height / 2))
-            .force("charge", d3.forceManyBody().strength(-50))
-            .force("collision", d3.forceCollide().radius(45))
+            .force("charge", d3.forceManyBody().strength(-80))
+            .force("collision", d3.forceCollide().radius(50))
             .on("tick", () => this.updateNodePositions());
 
         // Store initial positions after the first simulation run

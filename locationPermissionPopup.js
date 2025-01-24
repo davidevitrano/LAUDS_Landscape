@@ -63,7 +63,7 @@ class LocationPermissionPopup {
         // Create popup content
         const content = `
             <h3>Location Access</h3>
-            <p>To show the nearest urban producers relative to your position, we need access to your location.</p>
+            <p>To show the nearest urban producers relative to your position, LAUDS Landscape needs access to your location.</p>
             <p>Click continue to proceed with the browser's location request.</p>
             <div class="location-popup-buttons">
                 <button id="continue-location" class="location-btn continue-btn">Continue</button>

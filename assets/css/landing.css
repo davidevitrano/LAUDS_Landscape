@@ -25,6 +25,10 @@
     font-style: normal;
 }
 
+h1 {
+    font-size: 3rem;
+}
+
 .font-size-small {
     font-size: 0.8rem;
 }
@@ -34,7 +38,7 @@
 }
 
 .font-size-regular {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
 }
 
 .font-size-medium {
@@ -113,7 +117,7 @@ body {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease-in-out;
-    padding: 2rem 2rem 0 2rem;
+    padding: 1rem 1rem 0 1rem;
     position: fixed;
     top: 0;
     left: 0;
@@ -148,7 +152,7 @@ body {
 .landing-box {
     flex: 1;
     border-radius: 2rem 2rem 0 0;
-    padding: 2.5rem;
+    padding: 2rem;
     cursor: pointer;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
