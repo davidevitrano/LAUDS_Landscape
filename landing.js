@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Pulisci il sessionStorage quando si arriva sulla landing page
     sessionStorage.removeItem('tutorialShown');
     
     const text1 = document.getElementById('text1');
@@ -11,20 +10,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function animateText(element, text, delay = 40) {
         element.innerHTML = '';
         const chars = text.split('');
-        
         chars.forEach((char, index) => {
             const span = document.createElement('span');
             span.textContent = char;
             span.className = 'char';
             element.appendChild(span);
-            
             setTimeout(() => {
                 span.classList.add('visible');
             }, index * delay);
         });
     }
 
-    // First screen
     animateText(text1, text1.textContent);
     
     /* setTimeout(() => {
@@ -61,12 +57,22 @@ document.addEventListener('DOMContentLoaded', () => {
         landing.classList.add('active');
     }, 2);
     
-    // Box event listeners
+    // Box event listeners with view initialization
     const boxes = document.querySelectorAll('.landing-box');
     boxes.forEach(box => {
         box.addEventListener('click', () => {
             const view = box.dataset.view;
             localStorage.setItem('initialView', view);
+            
+            // Ensure view mode is properly initialized before redirecting
+            if (view === 'materials-gallery') {
+                const initData = {
+                    view: 'gallery',
+                    filter: 'Materials'
+                };
+                localStorage.setItem('viewInitData', JSON.stringify(initData));
+            }
+            
             window.location.href = 'network.html';
         });
     });

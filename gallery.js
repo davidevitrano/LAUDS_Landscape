@@ -17,7 +17,9 @@ class GalleryView {
         this.currentImageIndex = 0;
         this.animationInterval = null;
         this.loadedImages = new Set();
+        this.initialPositions = {}; // Store initial positions of nodes
     }
+
 
     async initialize() {
         try {
@@ -25,9 +27,9 @@ class GalleryView {
                 .attr("width", this.width)
                 .attr("height", this.height)
                 .style("background-color", "#ECECEC");
-
+    
             this.g = this.svg.append("g");
-
+    
             const zoom = d3.zoom()
                 .scaleExtent([0.7, 5])
                 .on("zoom", (event) => {
@@ -37,20 +39,23 @@ class GalleryView {
                     this.g.selectAll("path")
                         .style("stroke-width", `${1.5 / event.transform.k}px`);
                 });
-
+    
             this.svg.call(zoom);
-
+    
             d3.selectAll("#filters input").on("change", () => {
                 this.updateVisibility();
             });
-
+    
             await this.loadData();
             this.createSimulation();
-            await this.preloadImages(); // Precarica le immagini
+            await this.preloadImages();
             this.render();
             this.updateVisibility();
+            
+            return Promise.resolve();
         } catch (error) {
             console.error("Error initializing gallery view:", error);
+            return Promise.reject(error);
         }
     }
 
@@ -133,6 +138,7 @@ class GalleryView {
         // Rimuove popup esistenti e pulisce intervalli di animazione
         if (this.animationInterval) {
             clearInterval(this.animationInterval);
+            this.animationInterval = null;
         }
         d3.select("#popup").remove();
 
@@ -177,6 +183,7 @@ class GalleryView {
         d3.select("#close-popup").on("click", () => {
             if (this.animationInterval) {
                 clearInterval(this.animationInterval);
+                this.animationInterval = null;
             }
             newPopup.remove();
             this.isPopupOpen = false;
@@ -248,6 +255,13 @@ class GalleryView {
             .force("charge", d3.forceManyBody().strength(-50))
             .force("collision", d3.forceCollide().radius(45))
             .on("tick", () => this.updateNodePositions());
+
+        // Store initial positions after the first simulation run
+        this.simulation.on("end", () => {
+            this.nodes.forEach(node => {
+                this.initialPositions[node.id] = { x: node.x, y: node.y };
+            });
+        });
     }
 
     updateNodePositions() {
@@ -297,13 +311,20 @@ class GalleryView {
                     .attr("data-owner", img.owner)
                     .attr("data-category", d.category);
 
-                imageContainer.append("image")
+                    imageContainer.append("image")
                     .attr("width", imageSize)
                     .attr("height", imageSize)
                     .attr("xlink:href", img.imageUrl)
                     .style("cursor", "pointer")
                     .style("transition", "opacity 0.3s ease")
+                    .on("click", (event, d) => {
+                        // Open website link on click
+                        if (img.website && img.website.trim() !== "") {
+                            window.open(img.website, "_blank");
+                        }
+                    })
                     .on("mouseenter", (event) => {
+                        // Handle mouseenter...
                         event.stopPropagation();
                         this.createImagePopup(img, d.category, d.id, event);
                         
@@ -387,7 +408,8 @@ class GalleryView {
                             }
                         });
                     })
-                    .on("mouseleave", () => {
+                    .on("mouseleave", (event) => {
+                        // Handle mouseleave...
                         if (!this.isPopupOpen) {
                             this.g.selectAll("image")
                                 .style("opacity", 1);
@@ -396,6 +418,30 @@ class GalleryView {
                                 .style("opacity", 1);
 
                             linesContainer.selectAll("path").remove();
+                        } else {
+                            // Check if the mouse is over the popup
+                            const popup = d3.select("#popup");
+                            if (popup.node() && popup.node().contains(event.relatedTarget)) {
+                                return; // Do nothing if mouse is over the popup
+                            }
+                            
+                            // Close the popup if the mouse is not over it and not over a related image
+                            if (this.animationInterval) {
+                                clearInterval(this.animationInterval);
+                                this.animationInterval = null;
+                            }
+
+                            d3.select("#popup").remove();
+                            this.isPopupOpen = false;
+                            this.activeNode = null;
+
+                            this.g.selectAll("image")
+                                .style("opacity", 1);
+                            
+                            this.g.selectAll("text.category-label")
+                                .style("opacity", 1);
+
+                            this.g.selectAll("path").remove();
                         }
                     });
             });
@@ -403,23 +449,38 @@ class GalleryView {
     }
 
     updateVisibility() {
+        if (!this.simulation || !this.g) return;
+
         const activeFilters = new Set();
-        d3.selectAll("#filters input:checked").each(function() {
+        d3.selectAll("#filters input:checked").each(function () {
             activeFilters.add(this.value);
         });
 
+        // Show/hide nodes based on filters
         this.g.selectAll(".node-group")
-            .style("display", d => 
+            .style("display", d =>
                 activeFilters.size === 0 || activeFilters.has(d.category) ? "block" : "none"
             );
 
-        const visibleNodes = this.nodes.filter(node => 
+        const visibleNodes = this.nodes.filter(node =>
             activeFilters.size === 0 || activeFilters.has(node.category)
         );
 
+        // Update simulation with visible nodes and reset their positions
         this.simulation.nodes(visibleNodes);
-        this.simulation.alpha(1).restart();
+
+        visibleNodes.forEach(node => {
+            if (this.initialPositions[node.id]) {
+                node.x = this.initialPositions[node.id].x;
+                node.y = this.initialPositions[node.id].y;
+                node.fx = null;
+                node.fy = null;
+            }
+        });
+
+        this.simulation.alpha(0.6).restart(); // Use a smaller alpha to minimize movement
     }
+
 
     show() {
         this.svg.style("display", "block");
