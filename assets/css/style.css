@@ -240,6 +240,35 @@ html, body {
     height: 1.25rem;
 }
 
+.filter-disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
+.filter-disabled span {
+    border-color: #929292 !important;
+    color: #929292 !important;
+    background-color: transparent !important;
+}
+
+.filter-disabled span:hover {
+    background-color: transparent !important;
+    color: #929292 !important;
+    border-color: #929292 !important;
+}
+
+.filter-disabled .filter-shape polygon,
+.filter-disabled .filter-shape rect {
+    fill: none !important;
+    stroke: #929292 !important;
+}
+
+.filter-disabled input:hover + span .filter-shape polygon,
+.filter-disabled input:hover + span .filter-shape rect {
+    fill: none !important;
+    stroke: #929292 !important;
+}
+
 .content-container {
     padding: 2rem;
     max-width: 800px;
@@ -727,24 +756,4 @@ html, body {
 
 .user-location-point {
     fill: #FF5C00 !important;
-    
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1.1);
-    }
-    25% {
-        transform: scale(0.9);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    75% {
-        transform: scale(0.9);
-    }
-    100% {
-        transform: scale(1.1);
-    }
 }

@@ -31,6 +31,47 @@ let node = null;
 let width = window.innerWidth;
 let height = window.innerHeight;
 
+// Funzione per salvare lo stato corrente
+function saveCurrentState() {
+    const state = {
+        currentView: currentView,
+        filters: {
+            values: d3.select("#filter-values").property("checked"),
+            materials: d3.select("#filter-materials").property("checked"),
+            processes: d3.select("#filter-processes").property("checked"),
+            knowledge: d3.select("#filter-knowledge").property("checked")
+        }
+    };
+    localStorage.setItem('networkState', JSON.stringify(state));
+}
+
+// Funzione per ripristinare lo stato
+function restoreState() {
+    const savedState = localStorage.getItem('networkState');
+    if (!savedState) return;
+
+    const state = JSON.parse(savedState);
+    
+    // Mostra la network e i controlli
+    document.getElementById('network').classList.remove('network-hidden');
+    document.getElementById('network').classList.add('network-visible');
+    document.querySelectorAll('.utility-button, #filters').forEach(el => {
+        el.style.display = '';
+    });
+    
+    // Ripristina i filtri
+    d3.select("#filter-values").property("checked", state.filters.values);
+    d3.select("#filter-materials").property("checked", state.filters.materials);
+    d3.select("#filter-processes").property("checked", state.filters.processes);
+    d3.select("#filter-knowledge").property("checked", state.filters.knowledge);
+
+    // Ripristina la vista
+    const viewButton = document.querySelector(`[data-mode="${state.currentView}"]`);
+    if (viewButton) {
+        viewButton.click();
+    }
+}
+
 // Function to cleanup current view
 function cleanupCurrentView() {
     switch (currentView) {
@@ -594,6 +635,23 @@ document.querySelectorAll('.utility-button, #filters').forEach(el => {
     el.style.display = 'none';
 });
 
+// Add this function to handle filter states based on view
+function updateFilterStates(viewMode) {
+    // Reset all filters first
+    document.querySelectorAll('.filter-label-values, .filter-label-materials, .filter-label-processes, .filter-label-knowledge')
+        .forEach(filter => filter.classList.remove('filter-disabled'));
+
+    switch (viewMode) {
+        case 'gallery':
+            document.querySelector('.filter-label-values').classList.add('filter-disabled');
+            break;
+        case 'nearest':
+            document.querySelectorAll('.filter-label-values, .filter-label-materials, .filter-label-processes, .filter-label-knowledge')
+                .forEach(filter => filter.classList.add('filter-disabled'));
+            break;
+    }
+}
+
 // Setup view mode buttons
 document.querySelectorAll('.segment-btn').forEach(button => {
     button.addEventListener('click', () => {
@@ -667,6 +725,9 @@ document.querySelectorAll('.segment-btn').forEach(button => {
                 locationPopup.show(handleGeolocation);
                 break;
         }
+        // Add this after setting currentView:
+        updateFilterStates(newMode);
+        saveCurrentState();
     });
 });
 
@@ -688,7 +749,9 @@ d3.selectAll("#filters input").on("change", function () {
 
     // Reset global state and update visualization regardless of the current view
     resetGlobalState();
-    updateVisualization(); 
+    updateVisualization();
+    // Aggiungi il salvataggio dello stato
+    saveCurrentState();
 });
 
 // Add click event listener to legend button
@@ -766,7 +829,7 @@ Promise.all([
         .attr("height", height)
         .style("background-color", "#ECECEC")
         .call(d3.zoom()
-            .scaleExtent([0.7, 5])
+            .scaleExtent([0.6, 5])
             .on("zoom", (event) => {
                 const transform = event.transform;
                 g.attr("transform", transform);
@@ -803,18 +866,18 @@ Promise.all([
 
         node.attr("transform", d => `translate(${d.x},${d.y})`);
     });
-    
+
     // Check for initial view preference
     const initialView = localStorage.getItem('initialView');
     const viewInitData = localStorage.getItem('viewInitData');
-    
+
     if (initialView) {
         // Deselect all filters first
         d3.selectAll('#filters input').property('checked', false);
 
         // Create initial network but don't display it yet
         svg.style("display", "none");
-        
+
         // Set up initial view based on stored preference
         switch (initialView) {
             case 'values-network':
@@ -860,6 +923,9 @@ Promise.all([
 
         localStorage.removeItem('initialView');
         localStorage.removeItem('viewInitData');
+    } else {
+        // Se non c'è una vista iniziale, prova a ripristinare l'ultimo stato
+        restoreState();
     }
 }).catch(function (error) {
     console.error("Error loading the CSV files:", error);

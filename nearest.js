@@ -12,12 +12,13 @@ class NearestView {
         this.useGeolocation = useGeolocation;
         this.currentZoomLevel = 1;
         this.margin = { left: 100, right: 50, top: 50, bottom: 50 };
+        this.hoveredNode = null;
     }
 
     async loadData() {
         try {
             const response = await d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTbrRaZpcg6BmaLBiN1L5OF3MQ_hxr066EdOZlst486ALo-JcrBZBFyAO0wuC9I4zj7X_gpBY2YZrVF/pub?gid=0&single=true&output=csv");
-            
+
             this.nodes = response
                 .filter(d => d.Latitude && d.Longitude)
                 .map(d => ({
@@ -59,7 +60,7 @@ class NearestView {
         this.g = this.svg.append("g");
 
         const zoom = d3.zoom()
-            .scaleExtent([1, 5])
+            .scaleExtent([0.9, 5])
             .on("zoom", (event) => {
                 this.currentZoomLevel = event.transform.k;
                 this.g.attr("transform", event.transform);
@@ -69,7 +70,7 @@ class NearestView {
         this.svg.call(zoom);
 
         await this.loadData();
-        
+
         if (this.useGeolocation) {
             await this.getUserLocation();
             this.calculateDistances();
@@ -77,23 +78,23 @@ class NearestView {
         } else {
             this.positionNodesWithoutGeolocation();
         }
-        
+
         this.render();
     }
 
     positionNodesWithGeolocation() {
         const nodesByDistance = d3.group(this.nodes, d => Math.round(d.distance * 10) / 10);
-        
+
         const xScale = d3.scaleLinear()
             .domain([0, this.maxDistance])
             .range([this.margin.left, this.width - this.margin.right]);
 
         const sortedDistances = Array.from(nodesByDistance.keys()).sort((a, b) => a - b);
-        
+
         sortedDistances.forEach((distance, groupIndex) => {
             const nodes = nodesByDistance.get(distance);
             const x = xScale(distance);
-            
+
             const nearbyNodes = [];
             for (let i = Math.max(0, groupIndex - 7); i < groupIndex; i++) {
                 const nearbyDistance = sortedDistances[i];
@@ -102,27 +103,27 @@ class NearestView {
                     nearbyNodes.push(...nodesAtDistance);
                 }
             }
-            
+
             nodes.forEach((node, i) => {
                 node.x = x;
-                
+
                 const baseSpacing = this.height / (nodes.length + 1);
                 let y = baseSpacing * (i + 1);
-                
+
                 let attempts = 0;
                 const minVerticalDistance = 55;
-                
+
                 while (attempts < 10) {
-                    const overlap = nearbyNodes.some(nearNode => 
+                    const overlap = nearbyNodes.some(nearNode =>
                         Math.abs(nearNode.y - y) < minVerticalDistance
                     );
-                    
+
                     if (!overlap) break;
-                    
+
                     y += (attempts % 2 === 0 ? 1 : -1) * minVerticalDistance;
                     attempts++;
                 }
-                
+
                 y = Math.max(this.margin.top, Math.min(y, this.height - this.margin.bottom));
                 node.y = y;
             });
@@ -151,24 +152,32 @@ class NearestView {
 
     updateNodeScaling(scale) {
         // Scale regular nodes only (not user location)
-        this.g.selectAll(".node:not(.user-node)").each(function() {
+        this.g.selectAll(".node").each(function () {
             const node = d3.select(this);
             node.selectAll("circle")
                 .attr("transform", `scale(${1 / scale})`);
             node.select("text")
                 .attr("transform", `scale(${1 / scale})`);
         });
-        
+
         // Scale distance scale text only (lines have vector-effect)
-        this.g.selectAll(".distance-scale").each(function() {
+        this.g.selectAll(".distance-scale").each(function () {
             const scaleGroup = d3.select(this);
             scaleGroup.selectAll(".scale-text")
                 .attr("transform", `scale(${1 / scale})`);
         });
+        this.g.selectAll(".connection")
+            .attr("vector-effect", "non-scaling-stroke");
     }
 
     render() {
+        // Create a container for connections that will be behind nodes
+        if (!this.g.select(".connections-container").size()) {
+            this.g.append("g").attr("class", "connections-container");
+        }
+        
         this.g.selectAll(".node").remove();
+        this.g.selectAll(".connection").remove();
 
         if (this.useGeolocation && this.userLocation) {
             // Create distance scale group
@@ -237,6 +246,12 @@ class NearestView {
                 .attr("r", 12)
                 .attr("fill", "#FF5C00")
                 .attr("class", "user-location-point");
+            // Add hover effect to user node
+            userNode.on("mouseover", () => {
+                this.handleUserNodeHover(true);
+            }).on("mouseout", () => {
+                this.handleUserNodeHover(false);
+            });
         }
 
         const nodes = this.g.selectAll(".node:not(.user-node)")
@@ -246,6 +261,7 @@ class NearestView {
             .attr("class", "node")
             .attr("transform", d => `translate(${d.x},${d.y})`);
 
+        // Add circles and text as before
         nodes.append("circle")
             .attr("r", 12)
             .attr("stroke", "#FF5C00")
@@ -258,10 +274,88 @@ class NearestView {
             .attr("class", "font-size-small")
             .text(d => d.id);
 
+        // Add hover effects
+        nodes.on("mouseover", (event, d) => {
+            this.handleNodeHover(d, true);
+        }).on("mouseout", (event, d) => {
+            this.handleNodeHover(d, false);
+        });
+
+        // Click handler remains the same
         nodes.on("click", (event, d) => {
             event.stopPropagation();
             this.createPopup(d);
         });
+    }
+
+    handleNodeHover(node, isHovering) {
+        this.hoveredNode = isHovering ? node : null;
+        
+        // Find user node
+        const userNode = this.g.select(".user-node").data()[0];
+        
+        // When hovering, highlight the current node and keep user node visible
+        this.g.selectAll(".node")
+            .classed("highlight", d => d === node || d === userNode)
+            .classed("dim", d => isHovering && d !== node && d !== userNode);
+
+        // Remove existing connection
+        this.g.selectAll(".connection").remove();
+
+        if (isHovering) {
+            // Create curved connection line
+            const userX = this.margin.left / 2;
+            const userY = this.height / 2;
+            
+            const dx = node.x - userX;
+            const dy = node.y - userY;
+            const dr = Math.sqrt(dx * dx + dy * dy);
+
+            this.g.select(".connections-container")
+                .append("path")
+                .attr("class", "connection")
+                .attr("d", `M${userX},${userY}A${dr},${dr} 0 0,1 ${node.x},${node.y}`)
+                .attr("fill", "none")
+                .attr("stroke", "#999")
+                .attr("stroke-width", 1.5)
+                .attr("stroke-opacity", 0.6)
+                .attr("vector-effect", "non-scaling-stroke");
+        }
+    }
+
+    handleUserNodeHover(isHovering) {
+        // Highlight user node and all connected nodes
+        this.g.select(".user-node")
+            .classed("highlight", isHovering);
+
+        this.g.selectAll(".node:not(.user-node)")
+            .classed("highlight", isHovering)
+            .classed("dim", false);
+
+        // Remove existing connections
+        this.g.selectAll(".connection").remove();
+
+        if (isHovering) {
+            // Create curved connections to all nodes
+            const userX = this.margin.left / 2;
+            const userY = this.height / 2;
+
+            this.nodes.forEach(node => {
+                const dx = node.x - userX;
+                const dy = node.y - userY;
+                const dr = Math.sqrt(dx * dx + dy * dy);
+
+                this.g.select(".connections-container")
+                    .append("path")
+                    .attr("class", "connection")
+                    .attr("d", `M${userX},${userY}A${dr},${dr} 0 0,1 ${node.x},${node.y}`)
+                    .attr("fill", "none")
+                    .attr("stroke", "#999")
+                    .attr("stroke-width", 1.5)
+                    .attr("stroke-opacity", 0.6)
+                    .attr("vector-effect", "non-scaling-stroke");
+            });
+        }
     }
 
     createPopup(d) {

@@ -145,7 +145,7 @@ export default class TutorialOverlay {
         if (viewType === 'gallery') {
             content.append("h2")
                 .attr("class", "font-size-medium")
-                .style("text-align", "center")
+                .style("text-align", "left")
                 .text("Welcome to the Gallery View");
 
             content.append("p")
@@ -170,7 +170,7 @@ export default class TutorialOverlay {
         } else {
             content.append("h2")
                 .attr("class", "font-size-medium")
-                .style("text-align", "center")
+                .style("text-align", "left")
                 .text("Welcome to the Network Visualization");
 
             content.append("p")
