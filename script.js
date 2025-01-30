@@ -460,7 +460,7 @@ function createMainPopup(event, d) {
 
 }
 
-// Function to create legend popup
+// Function to create legend popup (updated version)
 function createLegendPopup() {
     // Remove any existing popups
     d3.select("#popup").remove();
@@ -477,18 +477,45 @@ function createLegendPopup() {
         
         <div class="popup-line"></div>
         
-        <h3>Network Visualisation</h3>
+        <div class="connected-category"><h3>Network Visualisation</h3></div>
         <p>See how different sustainable urban production realities in Europe are connected with different values, materials, processes and how they approach knowledge sharing in their spaces. Filter the visualisation to explore and click on the different nodes for additional information.</p>
+        <div class="network-section">
+            <div class="network-header">
+                <div class="legend-container">
+                <div class="legend-item">
+                    <img src="../assets/images/legend-producer.svg" alt="Producer node" class="legend-icon">
+                    <span class="font-size-small">Urban Producers</span>
+                </div>
+                <div class="legend-item">
+                    <img src="../assets/images/legend-values.svg" alt="Values node" class="legend-icon">
+                    <span class="font-size-small">Values</span>
+                </div>
+                <div class="legend-item">
+                    <img src="../assets/images/legend-materials.svg" alt="Materials node" class="legend-icon">
+                    <span class="font-size-small">Materials</span>
+                </div>
+                <div class="legend-item">
+                    <img src="../assets/images/legend-processes.svg" alt="Processes node" class="legend-icon">
+                    <span class="font-size-small">Processes and Technologies</span>
+                </div>
+                <div class="legend-item">
+                    <img src="../assets/images/legend-knowledge.svg" alt="Knowledge node" class="legend-icon">
+                    <span class="font-size-small">Knowledge Sharing</span>
+                </div>
+            </div>
+            <img src="../assets/images/network-preview.svg" alt="Network preview" class="network-preview">
+            </div>
+            
 
         <div class="popup-line"></div>
-
-        <h3>Gallery Visualisation</h3>
+        <div class="connected-category">
+        <h3>Gallery Visualisation</h3></div>
         <p>Urban production realities do not speak only in words but also using images and their visual communication is essential to discover the photos associated with the key concepts of the research. Each concept must also be discovered in its visual side. Find out which images belong to the same manufacturer by hovering over them or by clicking on them.</p>
 
         <div class="popup-line"></div>
-
-        <h3>Nearest Visualisation</h3>
-        <p>Check which urban producers are closest to you or more generally where they are positioned. See how the realities are arranged more or less close to the center representing your position. This visualization is simply used to have a more interactive view of the urban production realities collected and analyzed, it absolutely does not represent the complete European panorama.</p>
+        <div class="connected-category">
+        <h3>Nearest Visualisation</h3></div>
+        <p>Check which urban producers are closest to you or more generally where they are positioned. See how the realities are arranged more or less close to the left representing your position. This visualization is simply used to have a more interactive view of the urban production realities collected and analyzed, it absolutely does not represent the complete European panorama.</p>
     `;
 
     newPopup.html(popupContent);

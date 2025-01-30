@@ -255,7 +255,7 @@ class GalleryView {
     createSimulation() {
         this.simulation = d3.forceSimulation(this.nodes)
             .force("center", d3.forceCenter(this.width / 2, this.height / 2))
-            .force("charge", d3.forceManyBody().strength(-80))
+            .force("charge", d3.forceManyBody().strength(-60))
             .force("collision", d3.forceCollide().radius(50))
             .on("tick", () => this.updateNodePositions());
 

@@ -11,7 +11,7 @@ class NearestView {
         this.isPopupOpen = false;
         this.useGeolocation = useGeolocation;
         this.currentZoomLevel = 1;
-        this.margin = { left: 100, right: 50, top: 50, bottom: 50 };
+        this.margin = { left: 300, right: 50, top: 50, bottom: 50 };
         this.hoveredNode = null;
     }
 
@@ -84,6 +84,8 @@ class NearestView {
 
     positionNodesWithGeolocation() {
         const nodesByDistance = d3.group(this.nodes, d => Math.round(d.distance * 10) / 10);
+        const centerY = this.height*0.5;
+        const avoidanceZone = 0; // Pixels to keep clear above and below the central line
 
         const xScale = d3.scaleLinear()
             .domain([0, this.maxDistance])
@@ -95,6 +97,7 @@ class NearestView {
             const nodes = nodesByDistance.get(distance);
             const x = xScale(distance);
 
+            // Find nearby nodes for overlap checking
             const nearbyNodes = [];
             for (let i = Math.max(0, groupIndex - 7); i < groupIndex; i++) {
                 const nearbyDistance = sortedDistances[i];
@@ -107,24 +110,54 @@ class NearestView {
             nodes.forEach((node, i) => {
                 node.x = x;
 
-                const baseSpacing = this.height / (nodes.length + 1);
-                let y = baseSpacing * (i + 1);
+                // Determine if node should go above or below center line
+                const isAbove = i % 2 === 0;
+                
+                // Calculate available space for top and bottom sections
+                const availableSpace = isAbove ? 
+                    (centerY - avoidanceZone - this.margin.top) : 
+                    (this.height - (centerY + avoidanceZone) - this.margin.bottom);
+                
+                // Calculate initial position
+                const nodesInSection = Math.ceil(nodes.length / 2);
+                const sectionSpacing = availableSpace / (nodesInSection + 1);
+                
+                let y;
+                if (isAbove) {
+                    y = centerY - avoidanceZone - (Math.floor(i/2) + 0.2) * sectionSpacing;
+                } else {
+                    y = centerY + avoidanceZone + (Math.floor(i/2) + 1) * sectionSpacing;
+                }
 
+                // Adjust for overlaps
                 let attempts = 0;
-                const minVerticalDistance = 55;
+                const minVerticalDistance = 10;
+                const originalY = y;
 
                 while (attempts < 10) {
-                    const overlap = nearbyNodes.some(nearNode =>
+                    const overlap = nearbyNodes.some(nearNode => 
                         Math.abs(nearNode.y - y) < minVerticalDistance
                     );
 
                     if (!overlap) break;
 
-                    y += (attempts % 2 === 0 ? 1 : -1) * minVerticalDistance;
+                    // Move away from overlap while maintaining position relative to center
+                    if (isAbove) {
+                        y = originalY - (attempts + 1) * minVerticalDistance;
+                    } else {
+                        y = originalY + (attempts + 1) * minVerticalDistance;
+                    }
+                    
                     attempts++;
                 }
 
-                y = Math.max(this.margin.top, Math.min(y, this.height - this.margin.bottom));
+                // Ensure we stay within margins while respecting the central avoidance zone
+                if (isAbove) {
+                    y = Math.max(this.margin.top, y);
+                } else {
+                    y = Math.min(this.height - this.margin.bottom, y);
+                }
+
                 node.y = y;
             });
         });
@@ -227,15 +260,34 @@ class NearestView {
                     .text(km);
             }
 
+            // Add description text with wrapping to the left of the line
+            const foreignObject = scaleGroup.append("foreignObject")
+                .attr("x", -130)    // Position further left to accommodate wrapped text
+                .attr("y", -30)     // Adjust vertical position to center the wrapped text
+                .attr("width", 100) // Width of the text box
+                .attr("height", 60) // Height to accommodate wrapped text
+                .attr("class", "scale-text");
+
+            foreignObject.append("xhtml:div")
+                .style("font-size", "0.8rem") // Match font-size-small
+                .style("text-align", "right")  // Right align the text
+                .style("color", "#000")
+                .style("width", "100%")
+                .style("height", "100%")
+                .style("display", "flex")
+                .style("align-items", "center")
+                .style("justify-content", "flex-end")
+                .text("Find actors nearest to your location (km)");
+
             // Add "km" label at the start with fixed size
-            scaleGroup.append("text")
+            /* scaleGroup.append("text")
                 .attr("x", -25)
                 .attr("y", 20)
                 .attr("text-anchor", "end")
                 .attr("class", "font-size-small scale-text")
                 .style("transform-origin", "center")
                 .style("transform-box", "fill-box")
-                .text("(km)");
+                .text("(km)"); */
 
             // Add user location point
             const userNode = this.g.append("g")

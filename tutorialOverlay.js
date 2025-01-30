@@ -151,13 +151,10 @@ export default class TutorialOverlay {
             content.append("p")
                 .attr("class", "font-size-regular")
                 .style("margin", "20px 0")
-                .text("Explore the visual connections between different projects:");
+                .text("This is a gallery showing the visual connections between different projects and actors:");
 
             const instructions = [
-                "Hover over images to see connections between projects",
-                "Click on images to see more details",
-                "Use the filters above to focus on specific categories",
-                "Use your mouse wheel to zoom in and out"
+                "Hover over images to see connections between projects. Explore the map by moving and zooming and use the filters above to focus on specific categories. You can always change the visualisation or open the legend for any doubts.",
             ];
 
             content.selectAll(".instruction")
@@ -176,13 +173,10 @@ export default class TutorialOverlay {
             content.append("p")
                 .attr("class", "font-size-regular")
                 .style("margin", "20px 0")
-                .text("You can interact with the network in several ways:");
+                .text("This is a network map showing different actors and their connections:");
 
             const instructions = [
-                "Click and drag nodes to move them",
-                "Use your mouse wheel to zoom in and out",
-                "Click on nodes to see detailed information",
-                "Use the filters above to show different types of connections"
+                "Click on nodes to get detailed information. Explore the map by moving and zooming and use the filters above to show different types of connections. You can always change the visualisation or open the legend for any doubts.",
             ];
 
             content.selectAll(".instruction")
