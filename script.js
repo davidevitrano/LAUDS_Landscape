@@ -495,7 +495,7 @@ function createLegendPopup() {
                     <span class="font-size-small">Materials</span>
                 </div>
                 <div class="legend-item">
-                    <img src="assets/images/legend-processes.svg" alt="Processes node" class="legend-icon">
+                    <img src="./assets/images/legend-processes.svg" alt="Processes node" class="legend-icon">
                     <span class="font-size-small">Processes and Technologies</span>
                 </div>
                 <div class="legend-item">
