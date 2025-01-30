@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     animateText(text1, text1.textContent);
     
-    /* setTimeout(() => {
+    setTimeout(() => {
         screen1.classList.remove('active');
     }, 8000);
 
@@ -38,9 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => {
         landing.classList.add('active');
-    }, 17000); */
+    }, 17000);
 
-    setTimeout(() => {
+    /* setTimeout(() => {
         screen1.classList.remove('active');
     }, 1);
 
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => {
         landing.classList.add('active');
-    }, 2);
+    }, 2); */
     
     // Box event listeners with view initialization
     const boxes = document.querySelectorAll('.landing-box');
