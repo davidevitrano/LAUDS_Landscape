@@ -503,7 +503,7 @@ function createLegendPopup() {
                     <span class="font-size-small">Knowledge Sharing</span>
                 </div>
             </div>
-            <img src="assets/images/network-preview.svg" alt="Network preview" class="network-preview">
+            <img src="./assets/images/networkPreview.svg" alt="Network preview" class="network-preview">
             </div>
             
 
