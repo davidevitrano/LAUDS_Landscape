@@ -483,15 +483,15 @@ function createLegendPopup() {
             <div class="network-header">
                 <div class="legend-container">
                 <div class="legend-item">
-                    <img src="assets/images/legendProducer.svg" alt="Producer node" class="legend-icon">
+                    <img src="./assets/images/legendProducer.svg" alt="Producer node" class="legend-icon">
                     <span class="font-size-small">Urban Producers</span>
                 </div>
                 <div class="legend-item">
-                    <img src="assets/images/legendValues.svg" alt="Values node" class="legend-icon">
+                    <img src="./assets/images/legendValues.svg" alt="Values node" class="legend-icon">
                     <span class="font-size-small">Values</span>
                 </div>
                 <div class="legend-item">
-                    <img src="assets/images/legendMaterials.svg" alt="Materials node" class="legend-icon">
+                    <img src="./assets/images/legendMaterials.svg" alt="Materials node" class="legend-icon">
                     <span class="font-size-small">Materials</span>
                 </div>
                 <div class="legend-item">
