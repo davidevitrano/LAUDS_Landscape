@@ -483,23 +483,23 @@ function createLegendPopup() {
             <div class="network-header">
                 <div class="legend-container">
                 <div class="legend-item">
-                    <img src="assets/images/legend-producer.svg" alt="Producer node" class="legend-icon">
+                    <img src="assets/images/legendProducer.svg" alt="Producer node" class="legend-icon">
                     <span class="font-size-small">Urban Producers</span>
                 </div>
                 <div class="legend-item">
-                    <img src="assets/images/legend-values.svg" alt="Values node" class="legend-icon">
+                    <img src="assets/images/legendValues.svg" alt="Values node" class="legend-icon">
                     <span class="font-size-small">Values</span>
                 </div>
                 <div class="legend-item">
-                    <img src="assets/images/legend-materials.svg" alt="Materials node" class="legend-icon">
+                    <img src="assets/images/legendMaterials.svg" alt="Materials node" class="legend-icon">
                     <span class="font-size-small">Materials</span>
                 </div>
                 <div class="legend-item">
-                    <img src="./assets/images/legend-processes.svg" alt="Processes node" class="legend-icon">
+                    <img src="./assets/images/legendProcesses.svg" alt="Processes node" class="legend-icon">
                     <span class="font-size-small">Processes and Technologies</span>
                 </div>
                 <div class="legend-item">
-                    <img src="./assets/images/legend-knowledge.svg" alt="Knowledge node" class="legend-icon">
+                    <img src="./assets/images/legendKnowledge.svg" alt="Knowledge node" class="legend-icon">
                     <span class="font-size-small">Knowledge Sharing</span>
                 </div>
             </div>
